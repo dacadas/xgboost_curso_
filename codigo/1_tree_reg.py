@@ -120,7 +120,7 @@ from sklearn.model_selection import train_test_split
 from sklearn import tree
 
 path = 'D:/udemy/xgboost_curso_/Data_Files/'
-# path = 'D:/Diego/Curso Udemy/xgboost_curso_/Data_Files/'
+path = 'D:/Diego/Curso Udemy/xgboost_curso_/Data_Files/'
 data = pd.read_csv( path +  'Movie_regression.csv', header = 0)
 target = 'Collection'
 
