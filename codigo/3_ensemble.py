@@ -1,8 +1,11 @@
-################################################################################ 
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn import tree
+from  sklearn.ensemble import BaggingClassifier, RandomForestClassifier
+
+
+n_estimadores = 50
 
 path = 'D:/udemy/xgboost_curso_/Data_Files/'
 path = 'D:/Diego/Curso Udemy/xgboost_curso_/Data_Files/'
@@ -39,17 +42,24 @@ X_train, X_test, y_train, y_test = train_test_split( X, # Variáveis preditivas 
 
 
 # =============================================================================
-### Crescimiento del arbol --> opcion 1 -- profundidad (max_depth)
+### crear arbol
 # =============================================================================
-# max_depth: Define o limite de "andares" da árvore. 
-# Sem isso, a árvore cresce até memorizar os dados (overfitting).
-# REDUZIR esse valor ajuda a generalizar o modelo e evitar overfitting.
-reg_tree = tree.DecisionTreeClassifier( max_depth = 4, min_samples_leaf = 25 ) 
-reg_tree.fit( X_train, y_train )
+reg_tree = tree.DecisionTreeClassifier(  ) 
+
+
+## aplicar baggin
+bag_tree = BaggingClassifier( estimator = reg_tree,
+                              n_estimators = n_estimadores,
+                              bootstrap = True,
+                              random_state = semilla,
+                              n_jobs = -1
+                             )
+
+bag_tree.fit( X_train, y_train )
 
 # predecir
-y_predict_train = reg_tree.predict( X_train) 
-y_predict_test  = reg_tree.predict( X_test) 
+y_predict_train = bag_tree.predict( X_train) 
+y_predict_test  = bag_tree.predict(   X_test) 
 
 from sklearn.metrics import accuracy_score, roc_auc_score, confusion_matrix
 
@@ -70,13 +80,36 @@ print('test auc: {}'.format((roc_auc_score_test)))
 print('test roc_auc_score: {}'.format((roc_auc_score_test)))
 print('test cm_train:\n {}'.format((cm_test)))
 
+############################################################################
+print(*30*'#')
+print('RandomForest')
+## aplicar baggin
+RF_tree = RandomForestClassifier(  n_estimators = n_estimadores,                           
+                                   random_state = semilla,
+                                   n_jobs = -1
+                                 )
+
+RF_tree.fit( X_train, y_train )
+
+# predecir
+y_predict_train = RF_tree.predict( X_train) 
+y_predict_test  = RF_tree.predict(   X_test) 
+
+from sklearn.metrics import accuracy_score, roc_auc_score, confusion_matrix
 
 
-## plotar com matplotlib
-plt.figure(figsize=(16, 10)) # Ajuste o tamanho para a árvore não ficar espremida
-tree.plot_tree(reg_tree, 
-               feature_names=X_train.columns, 
-               filled=True, 
-               rounded=True, 
-               fontsize=10)
-plt.show()
+auc_train =  accuracy_score( y_train, y_predict_train)
+roc_auc_score_train =  roc_auc_score( y_train, y_predict_train)
+
+cm_train = confusion_matrix( y_train, y_predict_train)
+print('train auc: {}'.format((auc_train)))
+print('train roc_auc_score: {}'.format((roc_auc_score_train)))
+print('train cm_train:\n {}'.format((cm_train)))
+
+# test
+auc_test =  accuracy_score( y_test, y_predict_test)
+roc_auc_score_test =  roc_auc_score( y_test, y_predict_test)
+cm_test = confusion_matrix( y_test, y_predict_test)
+print('test auc: {}'.format((roc_auc_score_test)))
+print('test roc_auc_score: {}'.format((roc_auc_score_test)))
+print('test cm_train:\n {}'.format((cm_test)))
