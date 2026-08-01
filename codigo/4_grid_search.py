@@ -4,6 +4,8 @@ from sklearn.model_selection import train_test_split
 from sklearn import tree
 from  sklearn.ensemble import BaggingClassifier, RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
+import xgboost as xgb
+
 
 n_estimadores = 50
 
@@ -80,10 +82,10 @@ from sklearn.metrics import accuracy_score, roc_auc_score, confusion_matrix
 auc_train =  accuracy_score( y_train, y_predict_train)
 roc_auc_score_train =  roc_auc_score( y_train, y_predict_train)
 
-cm_train = confusion_matrix( y_train, y_predict_train)
-print('train auc: {}'.format((auc_train)))
-print('train roc_auc_score: {}'.format((roc_auc_score_train)))
-print('train cm_train:\n {}'.format((cm_train)))
+# cm_train = confusion_matrix( y_train, y_predict_train)
+# print('train auc: {}'.format((auc_train)))
+# print('train roc_auc_score: {}'.format((roc_auc_score_train)))
+# print('train cm_train:\n {}'.format((cm_train)))
 
 # test
 auc_test =  accuracy_score( y_test, y_predict_test)
@@ -112,7 +114,7 @@ grid_search_rf = GridSearchCV(RF_tree,
                                cv = 5,
                                scoring = 'accuracy'
                                )
-grid_search_rf.fit( X_tr ain, y_train )
+grid_search_rf.fit( X_train, y_train )
 # separar mejor modelo
 RF_tree = grid_search_rf.best_estimator_
 
@@ -123,6 +125,64 @@ print( grid_search_rf.best_params_ )
 # predecir
 y_predict_train = RF_tree.predict( X_train) 
 y_predict_test  = RF_tree.predict(   X_test) 
+
+from sklearn.metrics import accuracy_score, roc_auc_score, confusion_matrix
+
+
+auc_train =  accuracy_score( y_train, y_predict_train)
+roc_auc_score_train =  roc_auc_score( y_train, y_predict_train)
+
+cm_train = confusion_matrix( y_train, y_predict_train)
+print('train auc: {}'.format((auc_train)))
+print('train roc_auc_score: {}'.format((roc_auc_score_train)))
+print('train cm_train:\n {}'.format((cm_train)))
+
+# test
+auc_test =  accuracy_score( y_test, y_predict_test)
+roc_auc_score_test =  roc_auc_score( y_test, y_predict_test)
+cm_test = confusion_matrix( y_test, y_predict_test)
+print('test auc: {}'.format((roc_auc_score_test)))
+print('test roc_auc_score: {}'.format((roc_auc_score_test)))
+print('test cm_train:\n {}'.format((cm_test)))
+
+
+############################################################################
+print(*30*'#')
+print('XGB_tree')
+
+params_grid_XGB = {"max_depth":[7,9],
+                  "gamma":[0.1,0.3],
+                  "learning_rate":[0.01, 0.1, 0.2],
+                  "subsample":[0.7,0.8],
+                  "colsample_bytree":[0.7,0.8],
+                  "reg_alpha":[  0.1, 0.21],
+                  # "n_estimators":[n_estimadores, 5*n_estimadores, 10*n_estimadores]
+                  }
+                   
+                   
+## aplicar baggin
+XGB_tree = xgb.XGBClassifier(  learning_rate = 0.01,
+                                n_estimators = 2*n_estimadores,
+                                max_depth = 4,
+                                n_jobs = -1,
+                            )
+grid_search_xgb = GridSearchCV(XGB_tree, 
+                               params_grid_XGB,
+                               n_jobs = -1,
+                               cv = 5,
+                               scoring = 'accuracy'
+                               )
+grid_search_xgb.fit( X_train, y_train )
+# separar mejor modelo
+XGB_tree = grid_search_xgb.best_estimator_
+
+# ver mejores parametros
+print( grid_search_xgb.best_params_ )
+
+
+# predecir
+y_predict_train = XGB_tree.predict( X_train) 
+y_predict_test  = XGB_tree.predict(   X_test) 
 
 from sklearn.metrics import accuracy_score, roc_auc_score, confusion_matrix
 

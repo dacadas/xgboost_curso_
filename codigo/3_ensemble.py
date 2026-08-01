@@ -4,8 +4,11 @@ from sklearn.model_selection import train_test_split
 from sklearn import tree
 from  sklearn.ensemble import BaggingClassifier, RandomForestClassifier
 
+from  sklearn.ensemble import GradientBoostingClassifier, AdaBoostClassifier
+import xgboost as xgb
 
-n_estimadores = 50
+
+n_estimadores = 150
 
 path = 'D:/udemy/xgboost_curso_/Data_Files/'
 path = 'D:/Diego/Curso Udemy/xgboost_curso_/Data_Files/'
@@ -32,7 +35,7 @@ y = data[target]
 
 ###############################################################################
 ## Separa em conjunto de treinamento e teste
-semilla = 42 # Apenas garantindo que a variável semilla exista
+semilla = 13 # Apenas garantindo que a variável semilla exista
 X_train, X_test, y_train, y_test = train_test_split( X, # Variáveis preditivas (X)
                                                      y, # Alvo (y)
                                                      test_size    = 0.2, # Proporção do dataset a ser alocada para o conjunto de teste
@@ -67,10 +70,10 @@ from sklearn.metrics import accuracy_score, roc_auc_score, confusion_matrix
 auc_train =  accuracy_score( y_train, y_predict_train)
 roc_auc_score_train =  roc_auc_score( y_train, y_predict_train)
 
-cm_train = confusion_matrix( y_train, y_predict_train)
-print('train auc: {}'.format((auc_train)))
-print('train roc_auc_score: {}'.format((roc_auc_score_train)))
-print('train cm_train:\n {}'.format((cm_train)))
+# cm_train = confusion_matrix( y_train, y_predict_train)
+# print('train auc: {}'.format((auc_train)))
+# print('train roc_auc_score: {}'.format((roc_auc_score_train)))
+# print('train cm_train:\n {}'.format((cm_train)))
 
 # test
 auc_test =  accuracy_score( y_test, y_predict_test)
@@ -101,10 +104,10 @@ from sklearn.metrics import accuracy_score, roc_auc_score, confusion_matrix
 auc_train =  accuracy_score( y_train, y_predict_train)
 roc_auc_score_train =  roc_auc_score( y_train, y_predict_train)
 
-cm_train = confusion_matrix( y_train, y_predict_train)
-print('train auc: {}'.format((auc_train)))
-print('train roc_auc_score: {}'.format((roc_auc_score_train)))
-print('train cm_train:\n {}'.format((cm_train)))
+# cm_train = confusion_matrix( y_train, y_predict_train)
+# print('train auc: {}'.format((auc_train)))
+# print('train roc_auc_score: {}'.format((roc_auc_score_train)))
+# print('train cm_train:\n {}'.format((cm_train)))
 
 # test
 auc_test =  accuracy_score( y_test, y_predict_test)
@@ -113,3 +116,117 @@ cm_test = confusion_matrix( y_test, y_predict_test)
 print('test auc: {}'.format((roc_auc_score_test)))
 print('test roc_auc_score: {}'.format((roc_auc_score_test)))
 print('test cm_train:\n {}'.format((cm_test)))
+
+
+
+
+
+############################################################################
+print(*30*'#')
+print('Gradient boosting')
+## aplicar baggin
+GB_tree = GradientBoostingClassifier(  learning_rate = 0.01,
+                                       n_estimators = 2*n_estimadores,
+                                       max_depth = 4,
+                                       random_state = semilla,
+                                      
+                                   )
+
+GB_tree.fit( X_train, y_train )
+
+# predecir
+y_predict_train = GB_tree.predict( X_train) 
+y_predict_test  = GB_tree.predict(   X_test) 
+
+
+
+auc_train =  accuracy_score( y_train, y_predict_train)
+roc_auc_score_train =  roc_auc_score( y_train, y_predict_train)
+
+# cm_train = confusion_matrix( y_train, y_predict_train)
+# print('train auc: {}'.format((auc_train)))
+# print('train roc_auc_score: {}'.format((roc_auc_score_train)))
+# print('train cm_train:\n {}'.format((cm_train)))
+
+# test
+auc_test =  accuracy_score( y_test, y_predict_test)
+roc_auc_score_test =  roc_auc_score( y_test, y_predict_test)
+cm_test = confusion_matrix( y_test, y_predict_test)
+print('test auc: {}'.format((roc_auc_score_test)))
+print('test roc_auc_score: {}'.format((roc_auc_score_test)))
+print('test cm_train:\n {}'.format((cm_test)))
+
+
+############################################################################
+print(*30*'#')
+print('ADA boosting')
+## aplicar baggin
+AB_tree = AdaBoostClassifier(  learning_rate = 0.02 ,
+                                       n_estimators = 5*n_estimadores,
+
+                                       random_state = semilla,
+                                      
+                                   )
+
+AB_tree.fit( X_train, y_train )
+
+# predecir
+y_predict_train = AB_tree.predict( X_train) 
+y_predict_test  = AB_tree.predict(   X_test) 
+
+
+
+auc_train =  accuracy_score( y_train, y_predict_train)
+roc_auc_score_train =  roc_auc_score( y_train, y_predict_train)
+
+# cm_train = confusion_matrix( y_train, y_predict_train)
+# print('train auc: {}'.format((auc_train)))
+# print('train roc_auc_score: {}'.format((roc_auc_score_train)))
+# print('train cm_train:\n {}'.format((cm_train)))
+
+# test
+auc_test =  accuracy_score( y_test, y_predict_test)
+roc_auc_score_test =  roc_auc_score( y_test, y_predict_test)
+cm_test = confusion_matrix( y_test, y_predict_test)
+print('test auc: {}'.format((roc_auc_score_test)))
+print('test roc_auc_score: {}'.format((roc_auc_score_test)))
+print('test cm_train:\n {}'.format((cm_test)))
+
+
+############################################################################
+print(*30*'#')
+print('XG boosting')
+## aplicar baggin
+XGB_tree = xgb.XGBClassifier(  learning_rate = 0.01,
+                                n_estimators = 2*n_estimadores,
+                                max_depth = 4,
+                                n_jobs = -1,
+                               
+                            )
+
+XGB_tree.fit( X_train, y_train )
+
+# predecir
+y_predict_train = XGB_tree.predict( X_train) 
+y_predict_test  = XGB_tree.predict(   X_test) 
+
+
+
+auc_train =  accuracy_score( y_train, y_predict_train)
+roc_auc_score_train =  roc_auc_score( y_train, y_predict_train)
+
+# cm_train = confusion_matrix( y_train, y_predict_train)
+# print('train auc: {}'.format((auc_train)))
+# print('train roc_auc_score: {}'.format((roc_auc_score_train)))
+# print('train cm_train:\n {}'.format((cm_train)))
+
+# test
+auc_test =  accuracy_score( y_test, y_predict_test)
+roc_auc_score_test =  roc_auc_score( y_test, y_predict_test)
+cm_test = confusion_matrix( y_test, y_predict_test)
+print('test auc: {}'.format((roc_auc_score_test)))
+print('test roc_auc_score: {}'.format((roc_auc_score_test)))
+print('test cm_train:\n {}'.format((cm_test)))
+
+
+xgb.plot_importance(XGB_tree)
